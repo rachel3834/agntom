@@ -1,0 +1,19 @@
+{% extends 'tom_common/base.html' %}
+{% load static targets_extras observation_extras dataproduct_extras tom_common_extras %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<div class="row">
+  <div>
+    <h2 class="text-center">LCO AGN Reverberation Mapping Program</h2>
+    <p class="text-center">
+      <figure>
+        <video class="img-fluid mx-auto" controls autoplay>
+          <source src="{% static 'video/agn_animation.mp4' %}" type="video/mp4">
+          AGN Animation not supported in your browser
+        </video>
+        <figcaption><em>Animation of AGN by NASA Goddard's Scientific Visualization Studio</em></figcaption>
+      </figure>
+    </p>
+  </div>
+</div>
+{% endblock %}

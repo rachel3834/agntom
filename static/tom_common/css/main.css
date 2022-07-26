@@ -1,0 +1,37 @@
+body {
+  padding-top: 5rem;
+  background-color: black;
+  color: white;
+}
+
+figcaption {
+  color: #B6B5B5;
+}
+
+.table {
+  color: white;
+}
+
+.content {
+  padding: 3rem 1.5rem;
+}
+
+.navbar-brand > img {
+  max-height: 25px;
+}
+
+.input-group-text {
+  font-family: monospace;
+}
+
+.nav-item {
+  cursor: pointer;
+}
+
+#login-buttons > li {
+  margin: 0 2px 0 2px;
+}
+
+#dropdownMenuButton {
+  background-color: #B6B5B5;
+}

@@ -307,6 +307,11 @@ HOOKS = {
     'multiple_data_products_post_save': 'tom_dataproducts.hooks.multiple_data_products_post_save',
 }
 
+# Observing strategies
+TOM_CADENCE_STRATEGIES = [
+    'agntom.cadence_strategies.LongBaselineMonitoring'
+]
+
 AUTO_THUMBNAILS = False
 
 THUMBNAIL_MAX_SIZE = (0, 0)

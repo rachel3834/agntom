@@ -4,12 +4,39 @@ body {
   color: white;
 }
 
+nav {
+  background-color: #2C2C30;
+  color: white;
+}
+
+nav a:link {
+  color: white;
+}
+
+nav #nav-main-menu-item {
+  color: white;
+}
+
+nav li a:visited {
+  color: white;
+}
+
+nav .nav-item .dropdown .dropdown-menu a:link {
+  color: white;
+}
+
+nav .nav-item .dropdown .dropdown-menu a:visited {
+  color: white;
+}
+
+
 figcaption {
-  color: #B6B5B5;
+  color: #878897;
 }
 
 .table {
   color: white;
+  background-color:
 }
 
 .content {
@@ -28,10 +55,15 @@ figcaption {
   cursor: pointer;
 }
 
+.table-section {
+  padding: 1.5rem 1.5rem;
+  background-color: #2C2C30;
+}
+
 #login-buttons > li {
   margin: 0 2px 0 2px;
 }
 
 #dropdownMenuButton {
-  background-color: #B6B5B5;
+  background-color: #2C2C30;
 }

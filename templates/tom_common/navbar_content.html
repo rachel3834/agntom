@@ -9,24 +9,24 @@ For customization instructions, see tom_common/base.html
 </li>
 <li class="nav-item dropdown">
     <a class="nav-link dropdown-toggle {% if request.resolver_match.namespace == 'targets' %}active{% endif %}" data-toggle="dropdown"  id="nav-main-menu-item">Targets</a>
-    <div class="dropdown-menu">
+    <div class="dropdown-menu"  id="nav-main-menu-item">
         <a class="dropdown-item" href="{% url 'targets:list' %}">Targets</a>
     </div>
 </li>
 <li class="nav-item dropdown">
     <a class="nav-link dropdown-toggle" data-toggle="dropdown"  id="nav-main-menu-item">Observations</a>
-    <ul class="dropdown-menu">
+    <ul class="dropdown-menu"  id="nav-main-menu-item">
         <li class="nav-item {% if request.resolver_match.namespace == 'observations' %}active{% endif %}">
-            <a class="nav-link" href="{% url 'tom_observations:list' %}" style="color:black">Observations</a>
+            <a class="nav-link" href="{% url 'tom_observations:list' %}" >Observations</a>
         </li>
         <li class="nav-item {% if request.resolver_match.namespace == 'observations' %}active{% endif %}">
-            <a class="nav-link" href="{% url 'tom_observations:group-list' %}" style="color:black">Observation Groups</a>
+            <a class="nav-link" href="{% url 'tom_observations:group-list' %}" >Observation Groups</a>
         </li>
         <li class="nav-item {% if request.resolver_match.namespace == 'observations' %}active{% endif %}">
-            <a class="nav-link" href="{% url 'tom_observations:template-list' %}" style="color:black">Observation Templates</a>
+            <a class="nav-link" href="{% url 'tom_observations:template-list' %}" >Observation Templates</a>
         </li>
         <li class="nav-item {% if request.resolver_match.namespace == 'observations' %}active{% endif %}">
-            <a class="nav-link" href="{% url 'tom_observations:facility-status' %}" style="color:black">Facility Status</a>
+            <a class="nav-link" href="{% url 'tom_observations:facility-status' %}" >Facility Status</a>
         </li>
     </ul>
 </li>

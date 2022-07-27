@@ -15,20 +15,12 @@ nav a:link {
 
 nav #nav-main-menu-item {
   color: white;
+  background-color: #2C2C30;
 }
 
 nav li a:visited {
   color: white;
 }
-
-nav .nav-item .dropdown .dropdown-menu a:link {
-  color: white;
-}
-
-nav .nav-item .dropdown .dropdown-menu a:visited {
-  color: white;
-}
-
 
 figcaption {
   color: #878897;
@@ -36,7 +28,6 @@ figcaption {
 
 .table {
   color: white;
-  background-color:
 }
 
 .content {

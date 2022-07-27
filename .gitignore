@@ -1,2 +1,5 @@
 # Database file
 db.sqlite3
+
+# Python files
+*.pyc

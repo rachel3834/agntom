@@ -20,6 +20,8 @@ class LCOImagingTemplateForm(GenericTemplateForm, LCOBaseForm):
     max_lunar_phase = forms.FloatField()
     cadence = forms.FloatField()
     jitter = forms.FloatField()
+    template_type = forms.CharField(initial='lco_imaging_request',
+                                widget=forms.HiddenInput())
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -33,6 +35,7 @@ class LCOImagingTemplateForm(GenericTemplateForm, LCOBaseForm):
             self.common_layout,
             Row(
                 Column('proposal'),
+                Column('template_type'),
                 ),
             Row(
                 Column('ipp_value'),
@@ -75,6 +78,8 @@ class LCOImagingSequenceTemplateForm(GenericTemplateForm, LCOBaseForm):
         choices=(('NORMAL', 'Normal'), ('RAPID_RESPONSE', 'Rapid-Response'), ('TIME_CRITICAL', 'Time-Critical')),
         help_text=observation_mode_help
     )
+    template_type = forms.CharField(initial='lco_imaging_sequence',
+                                    widget=forms.HiddenInput())
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -89,12 +94,13 @@ class LCOImagingSequenceTemplateForm(GenericTemplateForm, LCOBaseForm):
             self.fields.pop(field_name)
 
         for field in self.fields:
-            if field != 'template_name':
+            if field != 'template_name' and field != 'template_type':
                 self.fields[field].required = False
 
         self.helper.layout = Layout(
             Row(
                 Column('template_name'),
+                Column('template_type'),
             ),
             Layout('facility'),
             self.layout(),

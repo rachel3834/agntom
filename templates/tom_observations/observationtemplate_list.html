@@ -11,13 +11,18 @@
       <a href="{% url 'lco-imaging-sequence-template-create' %}" title="lco-imaging-sequence" class="btn btn-outline-primary">LCO imaging sequence</a>
     </p>
     <table class="table table-striped">
-      <thead><tr><th>Name</th><th>Facility</th><th>Created</th><th>Delete</th></tr></thead>
+      <thead><tr><th>Name</th><th>Facility</th><th>Created</th><th>Parameters</th><th>Delete</th></tr></thead>
       <tbody>
         {% for template in filter.qs %}
         <tr>
-          <td><a href="{% url 'tom_observations:template-update' template.id %}" title="Update {{ template.name }}">{{ template.name }}</a></td>
+          {% if template.parameters.template_type == 'lco_imaging_sequence' %}
+            <td><a href="{% url 'tom_observations:template-update' template.id %}" title="Update {{ template.name }}">{{ template.name }}</a></td>
+          {% else %}
+            <td><a href="{% url 'tom_observations:template-update' template.id %}" title="Update {{ template.name }}">{{ template.name }}</a></td>
+          {% endif %}
           <td>{{ template.facility }}</td>
           <td>{{ template.created }}</td>
+          <td>{{ template.parameters }}</td>
           <td><a href="{% url 'tom_observations:template-delete' template.id %}" title="Delete strategy" class="btn btn-danger">Delete</a></td>
         </tr>
         {% empty %}

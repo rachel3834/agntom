@@ -3,9 +3,10 @@ from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import FormView
 from guardian.mixins import PermissionListMixin
-from agntom.forms import LCOImagingTemplateForm
+from agntom.forms import LCOImagingTemplateForm, LCOImagingSequenceTemplateForm
 from django.urls import reverse
 from django.shortcuts import redirect
+from tom_observations.widgets import FilterField
 
 class DetailedLCOImagingTemplateCreateView(FormView):
     """
@@ -44,7 +45,7 @@ class ObservationTemplateUpdateView(LoginRequiredMixin, FormView):
     """
     View for updating an existing observation template.
     """
-    template_name = 'tom_observations/observationtemplate_form.html'
+    template_name = 'tom_observations/lco_imaging_sequence_template_form.html'
 
     def get_object(self):
         return ObservationTemplate.objects.get(pk=self.kwargs['pk'])
@@ -68,4 +69,38 @@ class ObservationTemplateUpdateView(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         form.save(template_id=self.object.id)
+        return redirect(reverse('tom_observations:template-list'))
+
+
+class LCOImagingSequenceTemplateCreateView(FormView):
+    """
+    Displays the form for creating a new observation template. Uses the observation template form specified in the
+    respective facility class.
+    """
+    template_name = 'tom_observations/lco_imaging_sequence_template_form.html'
+
+    def get_facility_name(self):
+        return 'LCO'
+
+    def get_form_class(self):
+        facility_name = self.get_facility_name()
+
+        if not facility_name:
+            raise ValueError('Must provide a facility name')
+
+        return LCOImagingSequenceTemplateForm
+
+    def get_form(self, form_class=None):
+        form = super().get_form()
+        form.helper.form_action = reverse('lco-imaging-sequence-template-create')
+        return form
+
+    def get_initial(self):
+        initial = super().get_initial()
+        initial['facility'] = self.get_facility_name()
+        initial.update(self.request.GET.dict())
+        return initial
+
+    def form_valid(self, form):
+        form.save()
         return redirect(reverse('tom_observations:template-list'))

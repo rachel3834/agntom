@@ -1,9 +1,13 @@
 from tom_observations.observation_template import GenericTemplateForm
-from tom_observations.facilities.lco import LCOBaseForm, LCOBaseObservationForm
+from tom_observations.facilities.lco import LCOBaseForm, LCOBaseObservationForm, observation_mode_help
+from tom_observations.widgets import FilterField
 from django import forms
 from django.urls import reverse
+from django.conf import settings
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import ButtonHolder, Column, Layout, Row, Div, Submit
+from crispy_forms.bootstrap import AppendedText, PrependedText
+from crispy_forms.layout import ButtonHolder, Column, Layout, HTML, Row, Div
+from crispy_forms.layout import Submit, MultiWidgetField
 
 class LCOImagingTemplateForm(GenericTemplateForm, LCOBaseForm):
     """
@@ -50,46 +54,50 @@ class LCOImagingTemplateForm(GenericTemplateForm, LCOBaseForm):
                 )
             )
 
-class LCOCustomPhotometricSequenceForm(LCOBaseObservationForm):
+
+class LCOImagingSequenceTemplateForm(GenericTemplateForm, LCOBaseForm):
     """
-    The LCOCustomPhotometricSequenceForm provides a form that allows the user
-    to request imaging exposure sequences in multiple filters within the
-    same observation request.
-    The form is adapted from the TOM's internal LCOPhotometricSequenceForm.
+    The LCOImagingSequenceTemplateForm provides a form offering a subset of the parameters in the LCOImagingObservationForm.
+    The form is modeled after the Supernova Exchange application's Photometric Sequence Request Form, and allows the
+    configuration of multiple filters, as well as a more intuitive proactive cadence form.
+
+    Note that in contrast with the LCOPhotometricSequenceForm, this class cannot
+    inherit from the LCOBaseObservationForm, since that class has methods
+    which refer to specific targets.
     """
     valid_instruments = ['1M0-SCICAM-SINISTRO', '0M4-SCICAM-SBIG', '2M0-SPECTRAL-AG']
     valid_filters = ['U', 'B', 'V', 'R', 'I', 'up', 'gp', 'rp', 'ip', 'zs', 'w']
-    cadence_frequency = forms.IntegerField(required=True, help_text='in hours')
+    max_lunar_phase = forms.FloatField()
+    min_lunar_distance = forms.FloatField()
+    cadence = forms.FloatField(help_text='in hours')
+    jitter = forms.FloatField(help_text='in hours')
+    observation_mode = forms.ChoiceField(
+        choices=(('NORMAL', 'Normal'), ('RAPID_RESPONSE', 'Rapid-Response'), ('TIME_CRITICAL', 'Time-Critical')),
+        help_text=observation_mode_help
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # Add fields for each available filter as specified in the filters property
-        for filter_code, filter_name in LCOCustomPhotometricSequenceForm.filter_choices():
+        for filter_code, filter_name in LCOImagingSequenceTemplateForm.filter_choices():
             self.fields[filter_code] = FilterField(label=filter_name, required=False)
 
-        # Massage cadence form to be SNEx-styled
-        self.fields['cadence_strategy'] = forms.ChoiceField(
-            choices=[('', 'Once in the next'), ('ResumeCadenceAfterFailureStrategy', 'Repeating every')],
-            required=False,
-        )
+        # The FilterField objects inserted for each filter replace the
+        # separate fields for exposure and exposure count etc in the parameters.
         for field_name in ['exposure_time', 'exposure_count', 'filter']:
             self.fields.pop(field_name)
-        if self.fields.get('groups'):
-            self.fields['groups'].label = 'Data granted to'
-        for field_name in ['start', 'end']:
-            self.fields[field_name].widget = forms.HiddenInput()
-            self.fields[field_name].required = False
+
+        for field in self.fields:
+            if field != 'template_name':
+                self.fields[field].required = False
 
         self.helper.layout = Layout(
             Row(
-                Column('name'),
-                Column('cadence_strategy'),
-                Column('cadence_frequency'),
+                Column('template_name'),
             ),
-            Layout('facility', 'target_id', 'observation_type'),
+            Layout('facility'),
             self.layout(),
-            self.button_layout()
         )
 
     def _build_instrument_config(self):
@@ -111,63 +119,25 @@ class LCOCustomPhotometricSequenceForm(LCOBaseObservationForm):
 
         return instrument_config
 
-    def clean_start(self):
-        """
-        Unless included in the submission, set the start time to now.
-        """
-        start = self.cleaned_data.get('start')
-        if not start:  # Start is in cleaned_data as an empty string if it was not submitted, so check falsiness
-            start = datetime.strftime(datetime.now(), '%Y-%m-%dT%H:%M:%S')
-        return start
-
-    def clean_end(self):
-        """
-        Override clean_end in order to avoid the superclass attempting to date-parse an empty string.
-        """
-        return self.cleaned_data.get('end')
-
-    def clean(self):
-        """
-        This clean method does the following:
-            - Adds an end time that corresponds with the cadence frequency
-        """
-        cleaned_data = super().clean()
-        start = cleaned_data.get('start')
-        cleaned_data['end'] = datetime.strftime(parse(start) + timedelta(hours=cleaned_data['cadence_frequency']),
-                                                '%Y-%m-%dT%H:%M:%S')
-
-        return cleaned_data
-
     @staticmethod
     def instrument_choices():
         """
         This method returns only the instrument choices available in the current SNEx photometric sequence form.
         """
         return sorted([(k, v['name'])
-                       for k, v in LCOCustomPhotometricSequenceForm._get_instruments().items()
-                       if k in LCOCustomPhotometricSequenceForm.valid_instruments],
+                       for k, v in LCOImagingSequenceTemplateForm._get_instruments().items()
+                       if k in LCOImagingSequenceTemplateForm.valid_instruments],
                       key=lambda inst: inst[1])
 
     @staticmethod
     def filter_choices():
         return sorted(set([
-            (f['code'], f['name']) for ins in LCOCustomPhotometricSequenceForm._get_instruments().values() for f in
+            (f['code'], f['name']) for ins in LCOImagingSequenceTemplateForm._get_instruments().values() for f in
             ins['optical_elements'].get('filters', [])
-            if f['code'] in LCOCustomPhotometricSequenceForm.valid_filters]),
+            if f['code'] in LCOImagingSequenceTemplateForm.valid_filters]),
             key=lambda filter_tuple: filter_tuple[1])
 
-    def cadence_layout(self):
-        return Layout(
-            Row(
-                Column('cadence_type'), Column('cadence_frequency')
-            )
-        )
-
     def layout(self):
-        if settings.TARGET_PERMISSIONS_ONLY:
-            groups = Div()
-        else:
-            groups = Row('groups')
 
         # Add filters to layout
         filter_layout = Layout(
@@ -187,6 +157,7 @@ class LCOCustomPhotometricSequenceForm(LCOBaseObservationForm):
             ),
             Column(
                 Row('max_airmass'),
+                Row('max_lunar_phase'),
                 Row(
                     PrependedText('min_lunar_distance', '>')
                 ),
@@ -194,7 +165,8 @@ class LCOCustomPhotometricSequenceForm(LCOBaseObservationForm):
                 Row('proposal'),
                 Row('observation_mode'),
                 Row('ipp_value'),
-                groups,
+                Row('cadence'),
+                Row('jitter'),
                 css_class='col-md-6'
             ),
         )

@@ -7,8 +7,9 @@ from agntom.forms import LCOImagingTemplateForm, LCOImagingSequenceTemplateForm
 from django.urls import reverse
 from django.shortcuts import redirect
 from tom_observations.widgets import FilterField
+from tom_observations.models import ObservationTemplate
 
-class DetailedLCOImagingTemplateCreateView(FormView):
+class LCOImagingTemplateCreateView(FormView):
     """
     Displays the form for creating a new observation template. Uses the observation template form specified in the
     respective facility class.
@@ -41,23 +42,23 @@ class DetailedLCOImagingTemplateCreateView(FormView):
         form.save()
         return redirect(reverse('tom_observations:template-list'))
 
-class ObservationTemplateUpdateView(LoginRequiredMixin, FormView):
+class LCOImagingTemplateUpdateView(LoginRequiredMixin, FormView):
     """
     View for updating an existing observation template.
     """
-    template_name = 'tom_observations/lco_imaging_sequence_template_form.html'
+    template_name = 'tom_observations/lco_imaging_template_form.html'
 
     def get_object(self):
         return ObservationTemplate.objects.get(pk=self.kwargs['pk'])
 
     def get_form_class(self):
         self.object = self.get_object()
-        return get_service_class(self.object.facility)().get_template_form(None)
+        return LCOImagingTemplateForm
 
     def get_form(self):
         form = super().get_form()
         form.helper.form_action = reverse(
-            'tom_observations:template-update', kwargs={'pk': self.object.id}
+            'lco-imaging-template-update', kwargs={'pk': self.object.id}
         )
         return form
 
@@ -103,4 +104,35 @@ class LCOImagingSequenceTemplateCreateView(FormView):
 
     def form_valid(self, form):
         form.save()
+        return redirect(reverse('tom_observations:template-list'))
+
+
+class LCOImagingSequenceTemplateUpdateView(LoginRequiredMixin, FormView):
+    """
+    View for updating an existing observation template.
+    """
+    template_name = 'tom_observations/lco_imaging_sequence_template_form.html'
+
+    def get_object(self):
+        return ObservationTemplate.objects.get(pk=self.kwargs['pk'])
+
+    def get_form_class(self):
+        self.object = self.get_object()
+        return LCOImagingSequenceTemplateForm
+
+    def get_form(self):
+        form = super().get_form()
+        form.helper.form_action = reverse(
+            'lco-imaging-sequence-template-update', kwargs={'pk': self.object.id}
+        )
+        return form
+
+    def get_initial(self):
+        initial = super().get_initial()
+        initial.update(self.object.parameters)
+        initial['facility'] = self.object.facility
+        return initial
+
+    def form_valid(self, form):
+        form.save(template_id=self.object.id)
         return redirect(reverse('tom_observations:template-list'))

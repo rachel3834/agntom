@@ -15,8 +15,10 @@
       <tbody>
         {% for template in filter.qs %}
         <tr>
-          {% if template.parameters.template_type == 'lco_imaging_sequence' %}
-            <td><a href="{% url 'tom_observations:template-update' template.id %}" title="Update {{ template.name }}">{{ template.name }}</a></td>
+          {% if template.parameters.template_type == 'lco_imaging_request' %}
+            <td><a href="{% url 'lco-imaging-template-update' template.id %}" title="Update {{ template.name }}">{{ template.name }}</a></td>
+          {% elif  template.parameters.template_type == 'lco_imaging_sequence' %}
+            <td><a href="{% url 'lco-imaging-sequence-template-update' template.id %}" title="Update {{ template.name }}">{{ template.name }}</a></td>
           {% else %}
             <td><a href="{% url 'tom_observations:template-update' template.id %}" title="Update {{ template.name }}">{{ template.name }}</a></td>
           {% endif %}

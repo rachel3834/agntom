@@ -14,12 +14,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path, include
-from agntom.views import DetailedLCOImagingTemplateCreateView
+from agntom.views import LCOImagingTemplateCreateView, LCOImagingTemplateUpdateView
 from agntom.views import LCOImagingSequenceTemplateCreateView
+from agntom.views import LCOImagingSequenceTemplateUpdateView
 
 
 urlpatterns = [
     path('', include('tom_common.urls')),
-    path('template/lco-imaging/create/', DetailedLCOImagingTemplateCreateView.as_view(), name='lco-imaging-template-create'),
+    path('template/lco-imaging/create/', LCOImagingTemplateCreateView.as_view(), name='lco-imaging-template-create'),
+    path('template/lco-imaging/<int:pk>/update/', LCOImagingTemplateUpdateView.as_view(), name='lco-imaging-template-update'),
     path('template/lco-imaging-sequence/create/', LCOImagingSequenceTemplateCreateView.as_view(), name='lco-imaging-sequence-template-create'),
+    path('template/lco-imaging-sequence/<int:pk>/update/', LCOImagingSequenceTemplateUpdateView.as_view(), name='lco-imaging-sequence-template-update'),
 ]

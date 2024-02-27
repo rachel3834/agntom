@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../../XRISM_AGN/.idea/XRISM_AGN.iml" filepath="$PROJECT_DIR$/../../XRISM_AGN/.idea/XRISM_AGN.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/agntom.iml" filepath="$PROJECT_DIR$/.idea/agntom.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../leosat_obs_tools/.idea/leosat_obs_tools.iml" filepath="$PROJECT_DIR$/../leosat_obs_tools/.idea/leosat_obs_tools.iml" />
+    </modules>
+  </component>
+</project>
